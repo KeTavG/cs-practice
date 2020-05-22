@@ -7,13 +7,20 @@
     <x>0</x>
     <y>0</y>
     <width>1039</width>
-    <height>632</height>
+    <height>726</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>VigenereCipher</string>
+   <string>RSA</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QPushButton" name="generateKeysButton">
+     <property name="text">
+      <string>Generate Keys</string>
+     </property>
+    </widget>
+   </item>
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
@@ -23,6 +30,30 @@
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <item>
+      <widget class="QLabel" name="label_9">
+       <property name="text">
+        <string>s</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_8">
+       <property name="text">
+        <string>N</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -91,6 +122,16 @@
     <widget class="QLabel" name="label_6">
      <property name="text">
       <string>Private Keyword</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_7">
+     <property name="text">
+      <string>e</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

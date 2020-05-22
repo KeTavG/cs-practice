@@ -20,14 +20,36 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(1039, 632)
+        Form.resize(1039, 726)
         self.verticalLayout = QVBoxLayout(Form)
         self.verticalLayout.setObjectName(u"verticalLayout")
+        self.generateKeysButton = QPushButton(Form)
+        self.generateKeysButton.setObjectName(u"generateKeysButton")
+
+        self.verticalLayout.addWidget(self.generateKeysButton)
+
         self.label = QLabel(Form)
         self.label.setObjectName(u"label")
         self.label.setAlignment(Qt.AlignCenter)
 
         self.verticalLayout.addWidget(self.label)
+
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.label_9 = QLabel(Form)
+        self.label_9.setObjectName(u"label_9")
+        self.label_9.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_6.addWidget(self.label_9)
+
+        self.label_8 = QLabel(Form)
+        self.label_8.setObjectName(u"label_8")
+        self.label_8.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_6.addWidget(self.label_8)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_6)
 
         self.horizontalLayout_5 = QHBoxLayout()
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
@@ -90,6 +112,12 @@ class Ui_Form(object):
 
         self.verticalLayout.addWidget(self.label_6)
 
+        self.label_7 = QLabel(Form)
+        self.label_7.setObjectName(u"label_7")
+        self.label_7.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout.addWidget(self.label_7)
+
         self.privateKeywordE = QLineEdit(Form)
         self.privateKeywordE.setObjectName(u"privateKeywordE")
         self.privateKeywordE.setReadOnly(True)
@@ -142,12 +170,16 @@ class Ui_Form(object):
     # setupUi
 
     def retranslateUi(self, Form):
-        Form.setWindowTitle(QCoreApplication.translate("Form", u"VigenereCipher", None))
+        Form.setWindowTitle(QCoreApplication.translate("Form", u"RSA", None))
+        self.generateKeysButton.setText(QCoreApplication.translate("Form", u"Generate Keys", None))
         self.label.setText(QCoreApplication.translate("Form", u"Public Keyword", None))
+        self.label_9.setText(QCoreApplication.translate("Form", u"s", None))
+        self.label_8.setText(QCoreApplication.translate("Form", u"N", None))
         self.label_2.setText(QCoreApplication.translate("Form", u"Plaintext", None))
         self.label_4.setText(QCoreApplication.translate("Form", u"Ciphertext", None))
         self.encryptButton.setText(QCoreApplication.translate("Form", u"Encrypt", None))
         self.label_6.setText(QCoreApplication.translate("Form", u"Private Keyword", None))
+        self.label_7.setText(QCoreApplication.translate("Form", u"e", None))
         self.label_3.setText(QCoreApplication.translate("Form", u"Plaintext", None))
         self.label_5.setText(QCoreApplication.translate("Form", u"Ciphertext", None))
         self.decryptButton.setText(QCoreApplication.translate("Form", u"Decrypt", None))

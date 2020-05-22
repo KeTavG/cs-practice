@@ -7,6 +7,7 @@ from PySide2.QtCore import Slot
 from form_ui import Ui_Form
 
 N_LENGTH = 44
+NORMALIZE_LENGTH = 4
 AMOUNT_OF_TESTS = 1024
 MILLER_RABIN = 0
 
@@ -15,12 +16,26 @@ class RSA(QWidget):
         super(RSA, self).__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
-        publicKey, privateKey = RSACore.generateKeys(N_LENGTH)
-        self.ui.publicKeywordS.setText(str(publicKey[0]))
-        self.ui.publicKeywordN.setText(str(publicKey[1]))
-        self.ui.privateKeywordE.setText(str(privateKey[0]))
+        self.ui.generateKeysButton.clicked.connect(self.generateKeysSignal)
         self.ui.encryptButton.clicked.connect(self.encryptSignal)
         self.ui.decryptButton.clicked.connect(self.decryptSignal)
+
+    @Slot()
+    def generateKeysSignal(self):
+        self.publicKey, self.privateKey = RSACore.generateKeys(N_LENGTH)
+        self.publicKey = str(self.publicKey[0]), str(self.publicKey[1])
+        self.privateKey = str(self.privateKey[0]), str(self.privateKey[1])
+        ciphertext = RSACore.encrypt("test", self.publicKey)
+        plaintext = RSACore.decrypt(ciphertext, self.privateKey)
+        while not plaintext == "test":
+            self.publicKey, self.privateKey = RSACore.generateKeys(N_LENGTH)
+            self.publicKey = str(self.publicKey[0]), str(self.publicKey[1])
+            self.privateKey = str(self.privateKey[0]), str(self.privateKey[1])
+            ciphertext = RSACore.encrypt("test", self.publicKey)
+            plaintext = RSACore.decrypt(ciphertext, self.privateKey)
+        self.ui.publicKeywordS.setText(self.publicKey[0])
+        self.ui.publicKeywordN.setText(self.publicKey[1])
+        self.ui.privateKeywordE.setText(self.privateKey[0])
 
     @Slot()
     def encryptSignal(self):
@@ -28,6 +43,7 @@ class RSA(QWidget):
         publicKey = self.ui.publicKeywordS.text(), self.ui.publicKeywordN.text()
         ciphertext = RSACore.encrypt(plaintext, publicKey)
         self.ui.ciphertextEncrypt.setPlainText(ciphertext)
+        self.ui.ciphertextDecrypt.setPlainText(ciphertext)
 
     @Slot()
     def decryptSignal(self):
@@ -39,16 +55,34 @@ class RSA(QWidget):
 class RSACore:
     @staticmethod
     def encrypt(plaintext, publicKey):
-        s, n = publicKey
-        ciphertextCode = [pow(ord(char), int(s), int(n)) for char in plaintext]
-        ciphertext = ["0" * (len(n) - len(str(code))) + str(code) for code in ciphertextCode]
-        return ''.join(ciphertext)
+        s, n = publicKey 
+        blockSize = len(n) // NORMALIZE_LENGTH - 1
+        plaintextBlock = [plaintext[i:i + blockSize] for i in range(0, len(plaintext), blockSize)]
+        plaintextCode = []
+        for block in plaintextBlock:
+            normBlockCode = ''
+            for char in block:
+                charCode = str(ord(char))
+                normBlockCode += '0' * (NORMALIZE_LENGTH - len(charCode)) + charCode
+            plaintextCode.append(int(normBlockCode))
+        ciphertextCode = [str(pow(block, int(s), int(n))) for block in plaintextCode]
+        normCiphertext = ['0' * (len(n) - len(str(code))) + str(code) for code in ciphertextCode]
+        return ''.join(normCiphertext)
 
     @staticmethod
     def decrypt(ciphertext, privateKey):
         e, n = privateKey
-        plaintextCode = [int(ciphertext[i:i + len(n)]) for i in range(0, len(ciphertext), len(n))]
-        plaintext = [chr(pow(char, int(e), int(n))) for char in plaintextCode]
+        blockSize = len(n) // NORMALIZE_LENGTH - 1
+        ciphertextBlock = [int(ciphertext[i:i + len(n)]) for i in range(0, len(ciphertext), len(n))]
+        plaintextBlock = [str(pow(block, int(e), int(n))) for block in ciphertextBlock]
+        normBlockCode = ['0' * (blockSize * NORMALIZE_LENGTH - len(block)) + block
+                         for block in plaintextBlock]
+        plaintext = []
+        for block in normBlockCode:
+            plaintext += [block[i:i + NORMALIZE_LENGTH]
+                          for i in range(0, len(block), NORMALIZE_LENGTH)]
+        plaintext = [chr(int(code)) for code in plaintext
+                     if not code == "0000"]
         return ''.join(plaintext)
 
     @staticmethod
