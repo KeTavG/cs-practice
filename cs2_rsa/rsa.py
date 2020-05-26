@@ -4,7 +4,7 @@ from random import randint, randrange
 from collections import namedtuple
 from PySide2.QtWidgets import QApplication, QWidget
 from PySide2.QtCore import Slot
-from form_ui import Ui_Form
+from ui_form import Ui_Form
 
 N_LENGTH = 44
 NORMALIZE_LENGTH = 4
