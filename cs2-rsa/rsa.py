@@ -11,6 +11,7 @@ NORMALIZE_LENGTH = 4
 AMOUNT_OF_TESTS = 1024
 MILLER_RABIN = 0
 
+
 class RSA(QWidget):
     def __init__(self):
         super(RSA, self).__init__()
@@ -52,29 +53,36 @@ class RSA(QWidget):
         plaintext = RSACore.decrypt(ciphertext, privateKey)
         self.ui.plaintextDecrypt.setPlainText(plaintext)
 
+
 class RSACore:
     @staticmethod
     def encrypt(plaintext, publicKey):
-        s, n = publicKey 
+        s, n = publicKey
         blockSize = len(n) // NORMALIZE_LENGTH - 1
-        plaintextBlock = [plaintext[i:i + blockSize] for i in range(0, len(plaintext), blockSize)]
+        plaintextBlock = [plaintext[i:i + blockSize]
+                          for i in range(0, len(plaintext), blockSize)]
         plaintextCode = []
         for block in plaintextBlock:
             normBlockCode = ''
             for char in block:
                 charCode = str(ord(char))
-                normBlockCode += '0' * (NORMALIZE_LENGTH - len(charCode)) + charCode
+                normBlockCode += '0' * \
+                    (NORMALIZE_LENGTH - len(charCode)) + charCode
             plaintextCode.append(int(normBlockCode))
-        ciphertextCode = [str(pow(block, int(s), int(n))) for block in plaintextCode]
-        normCiphertext = ['0' * (len(n) - len(str(code))) + str(code) for code in ciphertextCode]
+        ciphertextCode = [str(pow(block, int(s), int(n)))
+                          for block in plaintextCode]
+        normCiphertext = ['0' * (len(n) - len(str(code))) + str(code)
+                          for code in ciphertextCode]
         return ''.join(normCiphertext)
 
     @staticmethod
     def decrypt(ciphertext, privateKey):
         e, n = privateKey
         blockSize = len(n) // NORMALIZE_LENGTH - 1
-        ciphertextBlock = [int(ciphertext[i:i + len(n)]) for i in range(0, len(ciphertext), len(n))]
-        plaintextBlock = [str(pow(block, int(e), int(n))) for block in ciphertextBlock]
+        ciphertextBlock = [int(ciphertext[i:i + len(n)])
+                           for i in range(0, len(ciphertext), len(n))]
+        plaintextBlock = [str(pow(block, int(e), int(n)))
+                          for block in ciphertextBlock]
         normBlockCode = ['0' * (blockSize * NORMALIZE_LENGTH - len(block)) + block
                          for block in plaintextBlock]
         plaintext = []
@@ -86,12 +94,12 @@ class RSACore:
         return ''.join(plaintext)
 
     @staticmethod
-    def generateKeys(length, test = MILLER_RABIN, amountOfTests = AMOUNT_OF_TESTS):
-        ## Generate prime number
+    def generateKeys(length, test=MILLER_RABIN, amountOfTests=AMOUNT_OF_TESTS):
+        # Generate prime number
         def generatePrime(length, test, amountOfTests):
-            ## Check on primes
+            # Check on primes
             def isPrime(number, test, amountOfTests):
-                ## Miller–Rabin primality test
+                # Miller–Rabin primality test
                 def testMillerRabin(number, amountOfTests):
                     if number == 2 or number == 3:
                         return True
@@ -121,36 +129,38 @@ class RSACore:
                                 return False
                     return True
 
-                ## isPrime
+                # isPrime
                 if test == MILLER_RABIN:
                     return testMillerRabin(number, amountOfTests)
 
-            ## generatePrime
+            # generatePrime
             primeCandidate = 4
-            generatePrimeCandidate = lambda length: randint((10**(length - 1)), 10**length)
+            def generatePrimeCandidate(length): return randint(
+                (10**(length - 1)), 10**length)
             while not isPrime(primeCandidate, test, amountOfTests):
                 primeCandidate = generatePrimeCandidate(length)
             return primeCandidate
 
-        ## Generate relatively prime number
+        # Generate relatively prime number
         def generateRelPrime(relNumber):
-            ## Check on relatively primes
+            # Check on relatively primes
             def isRelPrimes(a, b):
                 for n in range(2, min(a, b) + 1):
                     if a % n == 0 and b % n == 0:
                         return False
                     return True
 
-            ## generateRelPrime
-            generateRelPrimeCandidate = lambda relNumber: randrange(4, relNumber - 1)
+            # generateRelPrime
+            def generateRelPrimeCandidate(
+                relNumber): return randrange(4, relNumber - 1)
             relPrimeCandidate = generateRelPrimeCandidate(relNumber)
             while not isRelPrimes(relPrimeCandidate, relNumber):
                 relPrimeCandidate = generateRelPrimeCandidate(relNumber)
             return relPrimeCandidate
 
-        ## Generate e, such that (e * s) mod d = 1
+        # Generate e, such that (e * s) mod d = 1
         def generateE(s, d):
-            ## Extended Euclidean algorithm
+            # Extended Euclidean algorithm
             def extGCD(s, d):
                 if s == 0:
                     return (d, 0, 1)
@@ -158,7 +168,7 @@ class RSACore:
                     gcd, x, y = extGCD(d % s, s)
                 return (gcd, y - (d // s) * x, x)
 
-            ## generateE
+            # generateE
             if s < 0:
                 s = s % d
 
@@ -167,7 +177,7 @@ class RSACore:
             e = x % d
             return e
 
-        ## generateKeys
+        # generateKeys
         # 1. Select two large and prime numbers P, Q
         # 2. Calculate the number N = P * Q
         # 3. Calculate the value of Euler's function d = (P - 1)(Q - 1)
@@ -177,13 +187,14 @@ class RSACore:
         length = length // 2
         n = pow(10, lengthN + 1)
         while not ((n // pow(10, lengthN) == 0) and (n // pow(10, lengthN - 1) > 0)):
-            p = generatePrime(length, test, amountOfTests) # 1
+            p = generatePrime(length, test, amountOfTests)  # 1
             q = generatePrime(length, test, amountOfTests)
             n = p * q                                      # 2
         d = (p - 1) * (q - 1)                              # 3
         s = generateRelPrime(d)                            # 4
         e = generateE(s, d)                                # 5
         return (s, n), (e, n)
+
 
 if __name__ == "__main__":
     app = QApplication([])
